@@ -381,3 +381,43 @@ function startTour() {
   showStep(0);
   if (!tourModalEl.classList.contains("show")) tourModal.show();
 }
+
+function updateSalesRace() {
+  const card = document.getElementById('sales-race-card');
+  if (!card) return;
+
+  const { start, end } = getDateRange('this_month');
+  const sales = AppState.sales.filter(s => {
+    const d = getSaleDate(s);
+    return d && d >= start && d <= end;
+  });
+
+  const totalBySeller = sales.reduce((acc, s) => {
+    acc[s.vendedor] = (acc[s.vendedor] || 0) + s.valor;
+    return acc;
+  }, {});
+
+  const entries = Object.entries(totalBySeller).sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) {
+    card.innerHTML = '<p class="text-muted mb-0">Sem dados para exibir.</p>';
+    return;
+  }
+
+  const max = entries[0][1] || 1;
+
+  card.innerHTML = entries.map(([name, value]) => {
+    const pct = Math.round((value / max) * 100);
+    const color = AppState.vendedores.find(v => v.nome === name)?.cor || '#0d6efd';
+    return `
+      <div class="mb-2">
+        <div class="d-flex justify-content-between small">
+          <span>${name}</span><strong>${formatCurrency(value)}</strong>
+        </div>
+        <div class="progress" style="height:10px;">
+          <div class="progress-bar" style="width:${pct}%;background-color:${color};"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
