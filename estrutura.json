@@ -1,0 +1,28 @@
+{
+  "js/": {
+    "firebase-config.js": "",
+    "services/": {
+      "firebaseService.js": ""
+    },
+    "app/": {
+      "main.js": "",
+      "state.js": "",
+      "ui.js": "",
+      "auth.js": "",
+      "navigation.js": ""
+    },
+    "views/": {
+      "dashboard.js": "",
+      "vendas.js": "",
+      "produtos.js": "",
+      "depositos.js": "",
+      "gastos.js": "",
+      "relatorios.js": "",
+      "configuracoes.js": ""
+    },
+    "utils/": {
+      "helpers.js": "",
+      "reports.js": ""
+    }
+  }
+}

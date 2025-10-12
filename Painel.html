@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão | BRTEST</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)">
+</head>
+<body class="auth-page">
+    <div id="loading-overlay" class="d-none"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">A carregar...</span></div></div>
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <section id="auth-section">
+        <div id="login-section" class="container auth-container d-none"><div class="card auth-card p-4"><div class="card-body"><div class="text-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-bar-chart-line-fill text-primary" viewBox="0 0 16 16"><path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2z"/></svg><h2 class="mt-2">BRTEST Gestão</h2></div><form id="login-form"><h4 class="mb-3 text-center text-muted fw-light">Login</h4><div class="mb-3"><label for="login-email" class="form-label">Email</label><input type="email" class="form-control" id="login-email" required></div><div class="mb-3"><label for="login-password" class="form-label">Senha</label><input type="password" class="form-control" id="login-password" required></div><button type="submit" class="btn btn-primary w-100 py-2">Entrar</button></form><form id="register-form" class="d-none mt-4"><h4 class="mb-3 text-center text-muted fw-light">Registar Novo Utilizador</h4><div class="mb-3"><label for="register-email" class="form-label">Email</label><input type="email" class="form-control" id="register-email" required></div><div class="mb-3"><label for="register-password" class="form-label">Senha</label><input type="password" class="form-control" id="register-password" required></div><button type="submit" class="btn btn-success w-100 py-2">Registar</button></form><div class="text-center mt-3"><a href="#" id="toggle-register-link">Não tem uma conta? Registe-se</a></div></div></div></div>
+    </section>
+
+    <main id="app-section" class="main-content d-none">
+        <aside class="sidebar p-3 d-flex flex-column"><nav id="main-nav" class="nav flex-column"><div><div id="sidebar-brand" class="px-2 mb-4"><h4>BRTEST</h4></div><a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a><a class="nav-link" href="#" data-section="vendas"><i class="bi bi-receipt-cutoff"></i> Lançamentos</a><a class="nav-link" href="#" data-section="caixa"><i class="bi bi-safe-fill"></i> Caixa</a><a class="nav-link" href="#" data-section="depositos"><i class="bi bi-box-arrow-down"></i> Depósitos</a><a class="nav-link" href="#" data-section="gastos"><i class="bi bi-box-arrow-up"></i> Gastos</a><a class="nav-link" href="#" data-section="produtos"><i class="bi bi-box-seam-fill"></i> Produtos</a><a class="nav-link" href="#" data-section="relatorios"><i class="bi bi-file-earmark-bar-graph-fill"></i> Relatórios</a><a class="nav-link" href="#" data-section="configuracoes"><i class="bi bi-gear-fill"></i> Configurações</a></div><div class="mt-auto"><hr><div class="d-flex align-items-center px-2"><i class="bi bi-person-circle fs-4 me-2"></i><div><small class="text-muted d-block" id="user-email-display">a carregar...</small><a href="#" id="logout-button" class="text-danger small">Sair</a></div></div></div></nav></aside>
+        <div class="sidebar-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content">
+                <header class="content-header">
+                    <div class="d-flex align-items-center">
+                        <button class="sidebar-toggle" aria-label="Abrir menu"><i class="bi bi-list"></i></button>
+                        <h1 id="page-title" class="h2 mb-0 ms-2 ms-lg-0">Dashboard</h1>
+                    </div>
+                    <div class="form-check form-switch" id="theme-switcher-container">
+                        <input class="form-check-input" type="checkbox" role="switch" id="theme-switch" aria-label="Alternar tema claro e escuro">
+                        <label class="form-check-label" for="theme-switch"><i class="bi"></i></label>
+                    </div>
+                </header>
+                <div id="dashboard-content" class="page-content"></div>
+                <div id="vendas-content" class="page-content d-none"></div>
+                <div id="caixa-content" class="page-content d-none"></div>
+                <div id="depositos-content" class="page-content d-none"></div>
+                <div id="gastos-content" class="page-content d-none"></div>
+                <div id="produtos-content" class="page-content d-none"></div>
+                <div id="relatorios-content" class="page-content d-none"></div>
+                <div id="configuracoes-content" class="page-content d-none"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="vendaModal" tabindex="-1" aria-labelledby="vendaModalLabel" aria-hidden="true"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="vendaModalLabel">Nova Venda</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><form id="venda-form"><input type="hidden" id="venda-id"><div class="row"><div class="col-md-6 mb-3"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="venda-is-test"><label class="form-check-label" for="venda-is-test">Marcar como "Apenas Teste" (Valor será R$0)</label></div></div><div class="col-md-6 mb-3"><label for="venda-nota-fiscal" class="form-label">Nota Fiscal (Opcional)</label><input type="text" class="form-control" id="venda-nota-fiscal"></div></div><div class="row"><div class="col-md-6 mb-3"><label for="venda-data" class="form-label">Data</label><input type="date" class="form-control" id="venda-data" required></div><div class="col-md-6 mb-3"><label for="venda-vendedor" class="form-label">Vendedor</label><select class="form-select" id="venda-vendedor" required></select></div></div><hr><h6>Produtos</h6><div id="produtos-venda-container"></div><button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-produto-venda-btn"><i class="bi bi-plus"></i> Adicionar outro produto</button><hr><h6>Pagamento</h6><div class="row"><div class="col-md-6"><label class="form-label">Valor Total da Venda</label><input type="text" class="form-control" id="venda-valor-total" readonly></div><div class="col-md-6"><label class="form-label">Valor Restante</label><input type="text" class="form-control" id="venda-valor-restante" readonly></div></div><div id="pagamentos-venda-container" class="mt-2"></div><button type="button" class="btn btn-sm btn-outline-info mt-2" id="add-pagamento-venda-btn"><i class="bi bi-plus"></i> Adicionar Pagamento</button><hr><div class="mb-3"><label for="venda-observacao" class="form-label">Observação</label><input type="text" class="form-control" id="venda-observacao"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="venda-form">Salvar Venda</button></div></div></div></div>
+    <div class="modal fade" id="tour-modal" tabindex="-1" aria-labelledby="tour-modal-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="tour-modal-title">Bem-vindo(a)!</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body text-center p-4" id="tour-modal-body"><div id="tour-modal-content"></div><div id="tour-modal-footer" class="mt-4"><button id="tour-no" class="btn btn-secondary" data-bs-dismiss="modal">Não, obrigado</button><button id="tour-yes" class="btn btn-primary">Sim, vamos lá!</button></div></div></div></div></div>
+    <div class="modal fade" id="produtoModal" tabindex="-1" aria-labelledby="produtoModalLabel" aria-hidden="true"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="produtoModalLabel">Novo Produto</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><form id="produto-form"><input type="hidden" id="produto-id"><div class="mb-3"><label for="produto-nome" class="form-label">Nome do Produto Base</label><input type="text" class="form-control" id="produto-nome" required></div><div class="mb-3"><label for="produto-meta" class="form-label">Meta Semanal (unidades)</label><input type="number" class="form-control" id="produto-meta" value="0"></div><hr><h6>Variações (Cor, Tamanho, etc.)</h6><div id="variacoes-container"></div><button type="button" class="btn btn-sm btn-outline-success mt-2" id="add-variacao-btn"><i class="bi bi-plus"></i> Adicionar Variação</button></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="produto-form">Salvar Produto</button></div></div></div></div>
+    <div class="modal fade" id="depositoModal" tabindex="-1" aria-labelledby="depositoModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="depositoModalLabel">Novo Depósito</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><form id="deposito-form"><input type="hidden" id="deposito-id"><div class="mb-3"><label for="deposito-data" class="form-label">Data</label><input type="date" class="form-control" id="deposito-data" required></div><div class="mb-3"><label for="deposito-valor" class="form-label">Valor (R$)</label><input type="number" step="0.01" class="form-control" id="deposito-valor" required></div><div class="mb-3"><label for="deposito-observacao" class="form-label">Observação</label><input type="text" class="form-control" id="deposito-observacao"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="deposito-form">Salvar Depósito</button></div></div></div></div>
+    <div class="modal fade" id="gastoModal" tabindex="-1" aria-labelledby="gastoModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="gastoModalLabel">Novo Gasto</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><form id="gasto-form"><input type="hidden" id="gasto-id"><div class="mb-3"><label for="gasto-data" class="form-label">Data</label><input type="date" class="form-control" id="gasto-data" required></div><div class="mb-3"><label for="gasto-valor" class="form-label">Valor (R$)</label><input type="number" step="0.01" class="form-control" id="gasto-valor" required></div><div class="mb-3"><label for="gasto-descricao" class="form-label">Descrição</label><input type="text" class="form-control" id="gasto-descricao" required></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="gasto-form">Salvar Gasto</button></div></div></div></div>
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p>Tem a certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-danger" id="confirmDelete-btn">Excluir</button></div></div></div></div>
+    <div class="modal fade" id="configItemModal" tabindex="-1" aria-labelledby="configItemModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="configItemModalLabel">Novo Item</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><form id="configItem-form"><input type="hidden" id="configItem-id"><input type="hidden" id="configItem-collection"><div id="configItem-marca-group" class="mb-3 d-none"><label for="configItem-marca" class="form-label">Marca</label><input type="text" class="form-control" id="configItem-marca"></div><div class="mb-3"><label for="configItem-nome" class="form-label">Nome</label><input type="text" class="form-control" id="configItem-nome" required></div><div id="configItem-vendedor-extra-group" class="d-none"><div class="mb-3"><label for="configItem-emoji" class="form-label">Emoji (Opcional)</label><input type="text" class="form-control" id="configItem-emoji" placeholder="👤"></div><div class="mb-3"><label for="configItem-cor" class="form-label">Cor</label><input type="color" class="form-control form-control-color" id="configItem-cor" value="#0891b2" title="Escolha uma cor"></div><div class="mb-3"><label for="configItem-foto" class="form-label">URL da Foto (Opcional)</label><input type="text" class="form-control" id="configItem-foto" placeholder="https://exemplo.com/foto.jpg"></div></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="configItem-form">Salvar</button></div></div></div></div>
+    <div class="modal fade" id="fechamentoCaixaModal" tabindex="-1" aria-labelledby="fechamentoCaixaModalLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="fechamentoCaixaModalLabel">Fechar Caixa do Dia</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div><div class="modal-body"><p class="text-muted">Resumo das transações em dinheiro para o dia <strong id="fechamento-data"></strong>.</p><ul class="list-group mb-3"><li class="list-group-item d-flex justify-content-between align-items-center">Entradas (Vendas) <span class="badge bg-success rounded-pill fs-6" id="fechamento-entradas">R$ 0,00</span></li><li class="list-group-item d-flex justify-content-between align-items-center">Saídas (Gastos) <span class="badge bg-danger rounded-pill fs-6" id="fechamento-gastos">R$ 0,00</span></li><li class="list-group-item d-flex justify-content-between align-items-center">Saídas (Depósitos) <span class="badge bg-warning text-dark rounded-pill fs-6" id="fechamento-depositos">R$ 0,00</span></li><li class="list-group-item d-flex justify-content-between align-items-center"><strong>Saldo Esperado</strong> <strong class="fs-5" id="fechamento-esperado">R$ 0,00</strong></li></ul><form id="fechamento-caixa-form"><div class="mb-3"><label for="fechamento-contado" class="form-label">Valor Contado no Caixa (R$)</label><input type="number" step="0.01" class="form-control form-control-lg" id="fechamento-contado" required></div><div id="fechamento-resultado" class="alert d-none" role="alert"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" form="fechamento-caixa-form" id="fechamento-confirmar-btn">Confirmar Fechamento</button></div></div></div></div>
+    
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Importar Dados</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted" id="import-instructions">Selecione uma folha de cálculo (.xlsx, .csv) para importar. A primeira linha deve conter os cabeçalhos das colunas.</p>
+                    <div class="mb-3">
+                        <label for="import-file-input" class="form-label">Ficheiro</label>
+                        <input class="form-control" type="file" id="import-file-input" accept=".xlsx, .csv">
+                    </div>
+                    <hr>
+                    <h6>Pré-visualização dos Dados</h6>
+                    <div id="import-preview-container" class="table-responsive" style="max-height: 300px;">
+                        <p class="text-muted small">Nenhum ficheiro selecionado.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="import-confirm-btn" disabled>Confirmar Importação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/app/main.js"></script>
+</body>
+</html>
